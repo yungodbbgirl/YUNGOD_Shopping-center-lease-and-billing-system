@@ -1,15 +1,19 @@
 package com.scc;
 
-import com.scc.dao.UserDao;
+import com.scc.dao.DatabaseInitializer;
 import com.scc.model.User;
+import com.scc.ui.AdminMenu;
+import com.scc.ui.Authentication;
 
 import java.util.Scanner;
 
 public class Main {
-    private static final UserDao userDao = new UserDao();
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
+        // Initialize database tables and foreign keys upon startup
+        DatabaseInitializer.initializeDatabase();
+
         while (true) {
             System.out.println("\n==================================================");
             System.out.println(" SHOPPING CENTER LEASE & UTILITY BILLING SYSTEM ");
@@ -22,8 +26,13 @@ public class Main {
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1" -> handleRegister();
-                case "2" -> handleLogin();
+                case "1" -> Authentication.handleRegister();
+                case "2" -> {
+                    User user = Authentication.handleLogin();
+                    if (user != null) {
+                        runUserSession(user);
+                    }
+                }
                 case "3" -> {
                     System.out.println("Exiting application. Goodbye!");
                     return;
@@ -33,48 +42,14 @@ public class Main {
         }
     }
 
-    private static void handleRegister() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        System.out.println("Select System User Role:");
-        System.out.println("[1] Shopping Center Property Manager");
-        System.out.println("[2] Lease & Billing Staff / Cashier");
-        System.out.println("[3] Shopping Center Financial Auditor");
-        System.out.print("Choose role option: ");
-
-        String roleChoice = scanner.nextLine();
-        String role = switch (roleChoice) {
-            case "1" -> "Property Manager";
-            case "2" -> "Billing Staff / Cashier";
-            case "3" -> "Financial Auditor";
-            default -> "Billing Staff / Cashier";
-        };
-
-        boolean success = userDao.registerUser(username, password, role);
-        if (success) {
-            System.out.println("Registration successful! Account status is PENDING.");
-        }
-    }
-
-    private static void handleLogin() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        User user = userDao.loginUser(username, password);
-        if (user != null) {
-            System.out.println("\nLogin successful! Welcome, " + user.username() + " (" + user.role() + ")");
-            runUserSession(user);
-        } else {
-            System.out.println("Invalid username or password.");
-        }
-    }
-
     private static void runUserSession(User user) {
+        // Route Property Manager directly to the Admin Menu
+        if ("Property Manager".equals(user.role())) {
+            AdminMenu.displayAdminMenu();
+            return;
+        }
+
+        // Standard user session for other roles
         while (true) {
             System.out.println("\n--- Dashboard (" + user.role() + ") ---");
             System.out.println("[1] View Profile Info");
