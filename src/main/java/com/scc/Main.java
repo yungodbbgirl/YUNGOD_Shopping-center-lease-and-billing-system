@@ -1,6 +1,7 @@
 package com.scc;
 
 import com.scc.dao.DatabaseInitializer;
+import com.scc.dao.UserDao;
 import com.scc.model.User;
 import com.scc.ui.AdminMenu;
 import com.scc.ui.Authentication;
@@ -8,12 +9,16 @@ import com.scc.ui.Authentication;
 import java.util.Scanner;
 
 public class Main {
-    private static final Scanner scanner = new Scanner(System.in);
-
     public static void main(String[] args) {
-        // Initialize database tables and foreign keys upon startup
+        // 1. Initialize Database
         DatabaseInitializer.initializeDatabase();
 
+        // 2. Instantiate shared DAO and Utilities to pass into Authentication
+        UserDao userDao = new UserDao();
+        Scanner scanner = new Scanner(System.in);
+        Authentication auth = new Authentication(userDao, scanner);
+
+        // 3. Main execution loop
         while (true) {
             System.out.println("\n==================================================");
             System.out.println(" SHOPPING CENTER LEASE & UTILITY BILLING SYSTEM ");
@@ -26,9 +31,9 @@ public class Main {
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1" -> Authentication.handleRegister();
+                case "1" -> auth.handleRegister();
                 case "2" -> {
-                    User user = Authentication.handleLogin();
+                    User user = auth.handleLogin();
                     if (user != null) {
                         runUserSession(user);
                     }
@@ -43,13 +48,14 @@ public class Main {
     }
 
     private static void runUserSession(User user) {
-        // Route Property Manager directly to the Admin Menu
+        // Route Property Manager directly to Admin Menu
         if ("Property Manager".equals(user.role())) {
             AdminMenu.displayAdminMenu();
             return;
         }
 
-        // Standard user session for other roles
+        // Default session for other roles
+        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.println("\n--- Dashboard (" + user.role() + ") ---");
             System.out.println("[1] View Profile Info");

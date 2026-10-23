@@ -18,7 +18,6 @@ public class DatabaseInitializer {
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
-            // Enable SQLite Foreign Key constraints as requested in requirements
             stmt.execute("PRAGMA foreign_keys = ON;");
             stmt.execute(createUsersTableSQL);
         } catch (SQLException e) {

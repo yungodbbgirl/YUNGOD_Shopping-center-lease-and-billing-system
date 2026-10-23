@@ -6,19 +6,25 @@ import com.scc.model.User;
 import java.util.Scanner;
 
 public class Authentication {
-    private static final UserDao userDao = new UserDao();
-    private static final Scanner scanner = new Scanner(System.in);
+    private final UserDao userDao;
+    private final Scanner scanner;
 
-    public static void handleRegister() {
+    // Accept shared instances of UserDao and Scanner to avoid duplicate resource creation[cite: 10]
+    public Authentication(UserDao userDao, Scanner scanner) {
+        this.userDao = userDao;
+        this.scanner = scanner;
+    }
+
+    public void handleRegister() {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
         System.out.println("Select System User Role:");
-        System.out.println("[1] Property Manager");
-        System.out.println("[2] Billing Staff / Cashier");
-        System.out.println("[3] Financial Auditor");
+        System.out.println("[1] Shopping Center Property Manager");
+        System.out.println("[2] Lease & Billing Staff / Cashier");
+        System.out.println("[3] Shopping Center Financial Auditor");
         System.out.print("Choose role option: ");
 
         String roleChoice = scanner.nextLine();
@@ -35,7 +41,7 @@ public class Authentication {
         }
     }
 
-    public static User handleLogin() {
+    public User handleLogin() {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
