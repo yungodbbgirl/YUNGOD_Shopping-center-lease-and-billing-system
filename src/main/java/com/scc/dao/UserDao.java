@@ -92,6 +92,7 @@ public class UserDao {
     }
 
     public boolean approveUser(int userId) {
+        // Updated to match the teacher's requirement: WHERE id = ?[cite: 1]
         String sql = "UPDATE users SET status = 'APPROVED' WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
