@@ -101,9 +101,9 @@ public class Authentication {
     }
 
     private void runUserSession(User user) {
-        // Route Property Manager directly to Admin Menu
+        // Route Property Manager directly to Admin Menu, passing the current user session
         if ("Property Manager".equals(user.role())) {
-            AdminMenu.displayAdminMenu();
+            AdminMenu.displayAdminMenu(user);
             return;
         }
 
