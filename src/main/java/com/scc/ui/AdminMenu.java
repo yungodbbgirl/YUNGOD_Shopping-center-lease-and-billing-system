@@ -33,7 +33,7 @@ public class AdminMenu {
                 case "2" -> viewPendingUsers();
                 case "3" -> approveUserAccount(currentUser);
                 case "4" -> updateUserRoleAndStatus(currentUser);
-                case "5" -> viewSystemAuditLogs();
+                case "5" -> handleViewAuditLogsMenu();
                 case "6" -> {
                     System.out.println("Logging out from Admin menu...");
                     return;
@@ -115,7 +115,7 @@ public class AdminMenu {
         }
     }
 
-    private static void viewSystemAuditLogs() {
+    private static void handleViewAuditLogsMenu() {
         while (true) {
             System.out.println("\n--- SYSTEM AUDIT LOGS MENU ---");
             System.out.println("[1] View All System Logs");
@@ -125,19 +125,15 @@ public class AdminMenu {
 
             String choice = scanner.nextLine().trim();
             switch (choice) {
-                case "1" -> {
-                    List<ActivityLog> logs = activityLogDao.getAllLogs();
-                    printLogTable(logs, "ALL SYSTEM AUDIT LOGS");
-                }
+                case "1" -> displayAuditLogs(activityLogDao.getAllLogs());
                 case "2" -> {
-                    int userId = readIntInput("Enter User ID to filter logs: ");
-                    List<ActivityLog> logs = activityLogDao.getLogsByUserId(userId);
-                    printLogTable(logs, "AUDIT LOGS FOR USER ID: " + userId);
+                    int filterUserId = readIntInput("Enter User ID to filter by: ");
+                    displayAuditLogs(activityLogDao.getLogsByUserId(filterUserId));
                 }
                 case "3" -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println("Invalid choice. Please choose between 1 and 3.");
             }
         }
     }
@@ -184,7 +180,7 @@ public class AdminMenu {
         }
 
         String format = "| %-6s | %-15s | %-28s | %-10s |%n";
-        String border = "+--------+-----------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+";
+        String border = "+--------+-----------------+------------------------------+------------+";
 
         System.out.println(border);
         System.out.printf(format, "ID", "Username", "Role", "Status");
@@ -196,24 +192,29 @@ public class AdminMenu {
         System.out.println(border);
     }
 
-    private static void printLogTable(List<ActivityLog> logs, String title) {
-        System.out.println("\n--- " + title + " ---");
-        if (logs.isEmpty()) {
-            System.out.println("No activity log records found.");
-            return;
+    private static void displayAuditLogs(List<ActivityLog> logs) {
+        String format = " %-4s | %-7s | %-13s | %-52s | %-19s %n";
+        String border = "=================================================================================================================";
+        String separator = "-----------------------------------------------------------------------------------------------------------------";
+
+        System.out.println("\n" + border);
+        System.out.printf(format, "ID", "User ID", "Action Type", "Description", "Timestamp");
+        System.out.println(separator);
+
+        if (logs == null || logs.isEmpty()) {
+            System.out.printf(" %-110s %n", "No audit logs found.");
+        } else {
+            for (ActivityLog log : logs) {
+                System.out.printf(format,
+                        log.logId(),
+                        log.userId(),
+                        log.actionType(),
+                        log.description(),
+                        log.timestamp()
+                );
+                System.out.println(separator);
+            }
         }
-
-        String format = "%-4s | %-7s | %-16s | %-42s | %-19s%n";
-        String border = "----------------------------------------------------------------------------------------------------------------------------------------------------------------";
-
-        System.out.println(border);
-        System.out.printf(format, "ID", "USER ID", "ACTION TYPE", "DESCRIPTION", "TIMESTAMP");
-        System.out.println(border);
-
-        for (ActivityLog log : logs) {
-            System.out.printf(format, log.logId(), log.userId(), log.actionType(), log.description(), log.timestamp());
-        }
-        System.out.println(border);
-        System.out.println("Total: " + logs.size());
+        System.out.println(border + "\n");
     }
 }
