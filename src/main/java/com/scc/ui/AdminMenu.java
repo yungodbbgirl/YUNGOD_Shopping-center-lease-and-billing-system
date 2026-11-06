@@ -92,7 +92,6 @@ public class AdminMenu {
             return;
         }
 
-        // Self-Edit Restriction Rule
         if (userId == currentUser.userId()) {
             System.out.println("WARNING: Modifying the currently active admin account is restricted.");
             return;
@@ -143,8 +142,6 @@ public class AdminMenu {
         }
     }
 
-    // --- Input Validation Wrappers ---
-
     private static int readIntInput(String prompt) {
         while (true) {
             System.out.print(prompt);
@@ -152,7 +149,7 @@ public class AdminMenu {
             try {
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid numeric User ID.");
+                System.out.println("Invalid input. Please enter a valid numeric ID.");
             }
         }
     }
@@ -187,7 +184,7 @@ public class AdminMenu {
         }
 
         String format = "| %-6s | %-15s | %-28s | %-10s |%n";
-        String border = "+--------+-----------------+------------------------------+------------+";
+        String border = "+--------+-----------------+------------------------------+-----------------------------------------------------------------------------------------------------------------+";
 
         System.out.println(border);
         System.out.printf(format, "ID", "Username", "Role", "Status");
@@ -206,16 +203,17 @@ public class AdminMenu {
             return;
         }
 
-        String format = "| %-5s | %-8s | %-18s | %-35s | %-20s |%n";
-        String border = "+-------+----------+--------------------+-------------------------------------+----------------------+";
+        String format = "%-4s | %-7s | %-16s | %-42s | %-19s%n";
+        String border = "----------------------------------------------------------------------------------------------------------------------------------------------------------------";
 
         System.out.println(border);
-        System.out.printf(format, "ID", "User ID", "Action Type", "Description", "Timestamp");
+        System.out.printf(format, "ID", "USER ID", "ACTION TYPE", "DESCRIPTION", "TIMESTAMP");
         System.out.println(border);
 
         for (ActivityLog log : logs) {
             System.out.printf(format, log.logId(), log.userId(), log.actionType(), log.description(), log.timestamp());
         }
         System.out.println(border);
+        System.out.println("Total: " + logs.size());
     }
 }
