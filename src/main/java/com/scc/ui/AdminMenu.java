@@ -179,7 +179,7 @@ public class AdminMenu {
             return;
         }
 
-        String format = "| %-6s | %-15s | %-28s | %-10s |%n";
+        String format = "| %-5s | %-8s | %-18s | %-35s |%-19s %n";
         String border = "+--------+-----------------+------------------------------+------------+";
 
         System.out.println(border);
@@ -193,7 +193,7 @@ public class AdminMenu {
     }
 
     private static void displayAuditLogs(List<ActivityLog> logs) {
-        String format = " %-4s | %-7s | %-13s | %-52s | %-19s %n";
+        String format = " %-5s | %-8s | %-18s | %-35s | %-19s %n";
         String border = "=================================================================================================================";
         String separator = "-----------------------------------------------------------------------------------------------------------------";
 
