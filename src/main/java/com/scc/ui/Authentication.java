@@ -16,9 +16,9 @@ public class Authentication {
 
     public void start() {
         while (true) {
-            System.out.println("\n==================================================");
+            System.out.println("\n===================================================");
             System.out.println(" SHOPPING CENTER LEASE & UTILITY BILLING SYSTEM ");
-            System.out.println("==================================================");
+            System.out.println("===================================================");
             System.out.println("[1] Register Account");
             System.out.println("[2] Login");
             System.out.println("[3] Exit");
